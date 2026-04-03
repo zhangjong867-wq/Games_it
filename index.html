@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IT-Lab: Global Fix</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
+        
+        :root {
+            --neon-blue: #00f2ff;
+            --neon-purple: #bc13fe;
+            --dark-bg: #030712;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--dark-bg);
+            background-image: 
+                linear-gradient(rgba(99, 102, 241, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(99, 102, 241, 0.05) 1px, transparent 1px);
+            background-size: 30px 30px;
+            min-height: 100vh;
+            color: #f8fafc;
+        }
+
+        .cyber-glass {
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: zoomIn 0.4s ease-out; }
+
+        @keyframes zoomIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .grid-cell { transition: all 0.2s; user-select: none; font-family: 'JetBrains Mono', monospace; }
+        .grid-cell.selected { background: var(--neon-blue) !important; color: #000 !important; box-shadow: 0 0 15px var(--neon-blue); }
+        .grid-cell.found { background: #10b981 !important; color: white !important; pointer-events: none; }
+
+        .nav-btn {
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s;
+        }
+        .nav-btn.active {
+            background: linear-gradient(135deg, #6366f1, #a855f7) !important;
+            border-color: var(--neon-blue);
+            box-shadow: 0 0 15px rgba(99, 102, 241, 0.5);
+            color: white !important;
+        }
+
+        .wheel-rotate { transition: transform 4s cubic-bezier(0.15, 0, 0.15, 1); }
+        
+        .draggable-card { cursor: grab; transition: all 0.2s; background: rgba(30, 41, 59, 0.7); touch-action: none; }
+        .dragging { opacity: 0.5; transform: scale(0.98); border-color: var(--neon-blue); background: rgba(99, 102, 241, 0.2); }
+
+        .ttt-cell {
+            aspect-ratio: 1/1;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .x-mark { color: var(--neon-blue); text-shadow: 0 0 10px var(--neon-blue); }
+        .o-mark { color: var(--neon-purple); text-shadow: 0 0 10px var(--neon-purple); }
+
+        .neon-text { text-shadow: 0 0 10px rgba(99, 102, 241, 0.8); }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div class="max-w-5xl mx-auto">
+        <!-- Header -->
+        <header class="cyber-glass rounded-[2rem] p-6 mb-8 border-l-4 border-l-indigo-500 flex flex-col md:flex-row items-center justify-between gap-6">
+            <div class="text-center md:text-left">
+                <h1 class="text-2xl font-black neon-text text-white tracking-widest uppercase">IT-Lab: System Active</h1>
+                <p class="text-slate-500 text-xs font-bold uppercase tracking-[0.3em]">Модульная среда тестирования</p>
+            </div>
+            <div class="flex items-center gap-4 bg-white/5 px-6 py-3 rounded-2xl border border-white/10">
+                <span class="text-indigo-400 font-black text-xs uppercase tracking-widest">Score</span>
+                <span id="scoreDisplay" class="text-3xl font-black text-white">0</span>
+            </div>
+        </header>
+
+        <!-- Navigation -->
+        <nav class="flex flex-wrap gap-2 mb-8 justify-center">
+            <button onclick="switchTab('words', this)" class="nav-btn active px-6 py-2 rounded-xl font-bold bg-white/5 text-slate-400">🔍 Филворд</button>
+            <button onclick="switchTab('wheel', this)" class="nav-btn px-6 py-2 rounded-xl font-bold bg-white/5 text-slate-400">🎡 Колесо</button>
+            <button onclick="switchTab('binary', this)" class="nav-btn px-6 py-2 rounded-xl font-bold bg-white/5 text-slate-400">🔢 Двоичный</button>
+            <button onclick="switchTab('order', this)" class="nav-btn px-6 py-2 rounded-xl font-bold bg-white/5 text-slate-400">🧩 Порядок</button>
+            <button onclick="switchTab('ttt', this)" class="nav-btn px-6 py-2 rounded-xl font-bold bg-white/5 text-slate-400">🤖 ИИ-Дуэль</button>
+        </nav>
+
+        <main>
+            <!-- 1. ФИЛВОРД -->
+            <div id="words" class="tab-content active">
+                <div class="cyber-glass p-6 md:p-10 rounded-[2.5rem]">
+                    <div class="flex flex-col lg:flex-row gap-8 items-start justify-center">
+                        <div class="w-full lg:w-48 space-y-2">
+                            <p class="text-[10px] font-black text-indigo-400 mb-4 tracking-widest uppercase">Найти термины:</p>
+                            <div id="wordList" class="grid grid-cols-2 lg:grid-cols-1 gap-2"></div>
+                        </div>
+                        <div id="wordGrid" class="grid grid-cols-10 gap-1 p-2 bg-white/5 rounded-xl border border-white/10"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. КОЛЕСО -->
+            <div id="wheel" class="tab-content">
+                <div class="cyber-glass p-10 rounded-[2.5rem] flex flex-col lg:flex-row items-center gap-12">
+                    <div class="relative w-64 h-64 md:w-80 md:h-80">
+                        <div id="wheelCircle" class="wheel-rotate w-full h-full rounded-full border-8 border-slate-900 shadow-2xl relative overflow-hidden" style="background: conic-gradient(#4f46e5 0 72deg, #9333ea 72deg 144deg, #059669 144deg 216deg, #d97706 216deg 288deg, #2563eb 288deg 360deg);"></div>
+                        <div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-4 w-0 h-0 border-l-[15px] border-l-transparent border-r-[15px] border-r-transparent border-t-[35px] border-t-rose-500 z-10"></div>
+                        <button onclick="spinWheel()" id="spinBtn" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 bg-white rounded-full shadow-2xl font-black text-slate-900 z-20 hover:scale-110 active:scale-95 transition-all">SPIN</button>
+                    </div>
+                    <div id="quizBox" class="flex-1 w-full hidden p-6 bg-white/5 rounded-3xl border border-white/10"></div>
+                </div>
+            </div>
+
+            <!-- 3. ДВОИЧНЫЙ КОД -->
+            <div id="binary" class="tab-content">
+                <div class="cyber-glass p-10 rounded-[2.5rem] flex flex-col lg:flex-row gap-10">
+                    <div class="flex-1 text-center">
+                        <h2 id="targetNum" class="text-8xl font-black text-white neon-text mb-8 tracking-tighter">--</h2>
+                        <input type="text" id="binInput" maxlength="5" oninput="drawBinaryHints()" class="text-5xl font-mono tracking-widest text-center w-full p-6 bg-white/5 rounded-3xl border-2 border-white/10 mb-6 text-white outline-none focus:border-indigo-500" placeholder="00000">
+                        <button onclick="checkBinary()" class="w-full bg-indigo-600 text-white py-5 rounded-2xl font-black text-xl hover:bg-indigo-700 transition-all">ПРОВЕРИТЬ</button>
+                    </div>
+                    <div id="binaryHintList" class="w-full lg:w-64 space-y-2"></div>
+                </div>
+            </div>
+
+            <!-- 4. ПОРЯДОК -->
+            <div id="order" class="tab-content">
+                <div class="cyber-glass p-8 md:p-10 rounded-[2.5rem] max-w-2xl mx-auto">
+                    <div class="text-center mb-8">
+                        <h2 id="orderTaskTitle" class="text-xl font-black text-white uppercase tracking-widest leading-tight">--</h2>
+                    </div>
+                    <div id="orderContainer" class="space-y-3 mb-8 min-h-[200px]"></div>
+                    <button onclick="checkOrder()" class="w-full bg-emerald-600 text-white py-5 rounded-2xl font-black text-xl hover:bg-emerald-500 transition-all shadow-lg shadow-emerald-500/20">ПРОВЕРИТЬ АЛГОРИТМ</button>
+                    <p id="orderResult" class="mt-6 text-center font-black text-lg h-8"></p>
+                </div>
+            </div>
+
+            <!-- 5. КРЕСТИКИ НОЛИКИ -->
+            <div id="ttt" class="tab-content">
+                <div class="cyber-glass p-10 rounded-[2.5rem] flex flex-col lg:flex-row gap-12 items-center justify-center">
+                    <div class="w-full max-w-xs">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="text-lg font-black text-white">DUEL vs AI</h3>
+                            <select id="aiDifficulty" class="bg-indigo-900/40 text-white text-xs p-2 rounded-lg border border-white/10 outline-none">
+                                <option value="easy">Level: Easy</option>
+                                <option value="medium">Level: Hacker</option>
+                                <option value="hard">Level: Master</option>
+                            </select>
+                        </div>
+                        <div id="tttBoard" class="grid grid-cols-3 gap-2"></div>
+                        <button onclick="resetTTT()" class="mt-6 w-full py-3 bg-white/5 rounded-xl text-xs font-bold text-slate-500 hover:text-white border border-white/10 transition-all">СБРОС ПОЛЯ</button>
+                    </div>
+                    <div class="text-center lg:text-left space-y-4">
+                        <p id="tttStatus" class="text-2xl font-black text-indigo-400">Твой ход (X)</p>
+                        <p class="text-slate-500 text-sm max-w-xs">Система использует алгоритм поиска Minimax на уровне "Master". Обыграть его практически невозможно.</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        let score = 0;
+        const scoreDisplay = document.getElementById('scoreDisplay');
+        
+        function updateScore(pts) {
+            score += pts;
+            scoreDisplay.innerText = score;
+        }
+
+        function switchTab(id, btn) {
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            // Re-init games on switch
+            if (id === 'words') initWordSearch();
+            if (id === 'binary') initBinary();
+            if (id === 'order') initOrder();
+            if (id === 'ttt') initTTT();
+            if (id === 'wheel') {
+                document.getElementById('quizBox').classList.add('hidden');
+                document.getElementById('spinBtn').disabled = false;
+            }
+        }
+
+        // --- 🔍 ФИЛВОРД ---
+        const IT_WORDS = ['PYTHON', 'SERVER', 'ROUTER', 'PIXEL', 'DATA', 'CODE', 'ARRAY', 'BYTE'];
+        let selectedCells = [];
+        let wordsFound = [];
+
+        function initWordSearch() {
+            const grid = document.getElementById('wordGrid');
+            const list = document.getElementById('wordList');
+            grid.innerHTML = ''; list.innerHTML = '';
+            wordsFound = []; selectedCells = [];
+
+            IT_WORDS.forEach(word => {
+                const item = document.createElement('div');
+                item.id = 'word-item-' + word;
+                item.className = 'px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg text-[10px] font-black text-slate-600 text-center uppercase tracking-tighter';
+                item.innerText = word;
+                list.appendChild(item);
+            });
+
+            const size = 10;
+            let matrix = Array(size).fill(null).map(() => Array(size).fill(''));
+            IT_WORDS.forEach(word => {
+                let placed = false;
+                while (!placed) {
+                    const isV = Math.random() > 0.5;
+                    const r = Math.floor(Math.random() * (isV ? size - word.length : size));
+                    const c = Math.floor(Math.random() * (isV ? size : size - word.length));
+                    let ok = true;
+                    for (let i = 0; i < word.length; i++) {
+                        if (matrix[isV ? r+i : r][isV ? c : c+i] !== '') ok = false;
+                    }
+                    if (ok) {
+                        for (let i = 0; i < word.length; i++) matrix[isV?r+i:r][isV?c:c+i] = word[i];
+                        placed = true;
+                    }
+                }
+            });
+
+            for (let r = 0; r < size; r++) {
+                for (let c = 0; c < size; c++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'grid-cell w-8 h-8 md:w-10 md:h-10 flex items-center justify-center bg-white/5 shadow-sm font-black text-slate-400 cursor-pointer hover:bg-white/10 rounded border border-white/5 text-xs';
+                    cell.innerText = matrix[r][c] || String.fromCharCode(65 + Math.floor(Math.random() * 26));
+                    cell.onclick = () => {
+                        if (cell.classList.contains('found')) return;
+                        cell.classList.toggle('selected');
+                        if (cell.classList.contains('selected')) selectedCells.push(cell);
+                        else selectedCells = selectedCells.filter(x => x !== cell);
+                        
+                        const txt = selectedCells.map(x => x.innerText).join('');
+                        if (IT_WORDS.includes(txt) && !wordsFound.includes(txt)) {
+                            wordsFound.push(txt);
+                            selectedCells.forEach(x => x.className = 'grid-cell w-8 h-8 md:w-10 md:h-10 flex items-center justify-center bg-emerald-500 text-white font-black rounded found animate__animated animate__flash text-xs');
+                            document.getElementById('word-item-' + txt).className = 'px-3 py-1.5 bg-emerald-600 text-white rounded-lg text-[10px] font-black text-center border border-emerald-400';
+                            selectedCells = [];
+                            updateScore(50);
+                        } else if (selectedCells.length > 7) {
+                            selectedCells.forEach(x => x.classList.remove('selected'));
+                            selectedCells = [];
+                        }
+                    };
+                    grid.appendChild(cell);
+                }
+            }
+        }
+
+        // --- 🎡 КОЛЕСО ---
+        const questions = [
+            { q: "Основная единица измерения информации?", a: ["Бит", "Байт", "Килобит"], c: 1 },
+            { q: "Что такое HTTP?", a: ["Протокол", "Язык", "Железо"], c: 0 },
+            { q: "Как называется 'мозг' компьютера?", a: ["HDD", "RAM", "CPU"], c: 2 },
+            { q: "Популярный язык для Data Science?", a: ["C++", "Python", "Swift"], c: 1 },
+            { q: "Сколько бит в байте?", a: ["8", "16", "32"], c: 0 }
+        ];
+        let wheelRotation = 0;
+
+        function spinWheel() {
+            const wheel = document.getElementById('wheelCircle');
+            const btn = document.getElementById('spinBtn');
+            const box = document.getElementById('quizBox');
+            
+            btn.disabled = true;
+            box.classList.add('hidden');
+            
+            const extra = Math.floor(Math.random() * 360) + 1440;
+            wheelRotation += extra;
+            wheel.style.transform = `rotate(${wheelRotation}deg)`;
+
+            setTimeout(() => {
+                btn.disabled = false;
+                const idx = Math.floor(Math.random() * questions.length);
+                renderQuiz(questions[idx]);
+            }, 4000);
+        }
+
+        function renderQuiz(data) {
+            const box = document.getElementById('quizBox');
+            box.innerHTML = `
+                <h3 class="text-xl font-black text-white mb-6 uppercase tracking-tight">${data.q}</h3>
+                <div class="flex flex-col gap-3">
+                    ${data.a.map((ans, i) => `<button onclick="checkWheelAnswer(this, ${i}, ${data.c})" class="p-4 bg-white/5 border border-white/10 rounded-xl font-bold text-left text-slate-400 hover:text-white transition-all hover:border-indigo-500">${ans}</button>`).join('')}
+                </div>
+            `;
+            box.classList.remove('hidden');
+            box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        function checkWheelAnswer(btn, i, c) {
+            if (i === c) {
+                btn.className = "p-4 bg-emerald-600 text-white rounded-xl font-bold text-left border border-emerald-400";
+                updateScore(30);
+            } else {
+                btn.className = "p-4 bg-rose-600 text-white rounded-xl font-bold text-left border border-rose-400";
+            }
+            document.querySelectorAll('#quizBox button').forEach(b => b.disabled = true);
+        }
+
+        // --- 🔢 ДВОИЧНЫЙ КОД ---
+        let binTarget = 0;
+        function initBinary() {
+            binTarget = Math.floor(Math.random() * 31) + 1;
+            document.getElementById('targetNum').innerText = binTarget;
+            document.getElementById('binInput').value = '';
+            drawBinaryHints();
+        }
+
+        function drawBinaryHints() {
+            const input = document.getElementById('binInput').value.padStart(5, '0');
+            const hints = document.getElementById('binaryHintList');
+            hints.innerHTML = '';
+            [16, 8, 4, 2, 1].forEach((val, i) => {
+                const active = input[i] === '1';
+                hints.innerHTML += `
+                    <div class="p-4 rounded-xl flex justify-between border transition-all ${active ? 'bg-indigo-600 border-indigo-400 text-white' : 'bg-white/5 border-white/5 text-slate-600'}">
+                        <span class="font-bold text-xs opacity-50">2^${4-i}</span>
+                        <span class="font-black text-xl">${val}</span>
+                    </div>
+                `;
+            });
+        }
+
+        function checkBinary() {
+            const val = document.getElementById('binInput').value;
+            if (parseInt(val, 2) === binTarget) {
+                updateScore(100);
+                initBinary();
+            } else {
+                const input = document.getElementById('binInput');
+                input.classList.add('animate__animated', 'animate__shakeX');
+                setTimeout(() => input.classList.remove('animate__animated', 'animate__shakeX'), 1000);
+            }
+        }
+
+        // --- 🧩 ПОРЯДОК (ИСПРАВЛЕННЫЙ ALGORITHM) ---
+        const tasks = [
+            { t: "Загрузка Веб-Страницы", s: ["DNS запрос", "Установка TCP", "HTTP GET", "Рендеринг DOM"] },
+            { t: "Компиляция Программы", s: ["Лексический анализ", "Синтаксический разбор", "Оптимизация кода", "Генерация машинного кода"] }
+        ];
+        let currentCorrect = [];
+
+        function initOrder() {
+            const container = document.getElementById('orderContainer');
+            const task = tasks[Math.floor(Math.random() * tasks.length)];
+            currentCorrect = task.s;
+            document.getElementById('orderTaskTitle').innerText = task.t;
+            document.getElementById('orderResult').innerText = "";
+            
+     

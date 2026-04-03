@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IT-Lab: Global Fix</title>
+    <title>IT-Lab: Cyber Quest Final</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <style>
@@ -12,7 +12,7 @@
         :root {
             --neon-blue: #00f2ff;
             --neon-purple: #bc13fe;
-            --dark-bg: #030712;
+            --dark-bg: #020617;
         }
 
         body {
@@ -24,152 +24,166 @@
             background-size: 30px 30px;
             min-height: 100vh;
             color: #f8fafc;
+            overflow-x: hidden;
         }
 
         .cyber-glass {
             background: rgba(15, 23, 42, 0.8);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(99, 102, 241, 0.3);
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
         }
 
         .tab-content { display: none; }
-        .tab-content.active { display: block; animation: zoomIn 0.4s ease-out; }
+        .tab-content.active { display: block; animation: fadeInUp 0.4s ease-out; }
 
-        @keyframes zoomIn {
-            from { opacity: 0; transform: scale(0.95); }
-            to { opacity: 1; transform: scale(1); }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-
-        .grid-cell { transition: all 0.2s; user-select: none; font-family: 'JetBrains Mono', monospace; }
-        .grid-cell.selected { background: var(--neon-blue) !important; color: #000 !important; box-shadow: 0 0 15px var(--neon-blue); }
-        .grid-cell.found { background: #10b981 !important; color: white !important; pointer-events: none; }
 
         .nav-btn {
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.3s;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .nav-btn.active {
-            background: linear-gradient(135deg, #6366f1, #a855f7) !important;
+            background: linear-gradient(135deg, #4f46e5, #7c3aed) !important;
             border-color: var(--neon-blue);
-            box-shadow: 0 0 15px rgba(99, 102, 241, 0.5);
+            box-shadow: 0 0 20px rgba(79, 70, 229, 0.4);
             color: white !important;
+            transform: translateY(-2px);
         }
 
         .wheel-rotate { transition: transform 4s cubic-bezier(0.15, 0, 0.15, 1); }
         
-        .draggable-card { cursor: grab; transition: all 0.2s; background: rgba(30, 41, 59, 0.7); touch-action: none; }
-        .dragging { opacity: 0.5; transform: scale(0.98); border-color: var(--neon-blue); background: rgba(99, 102, 241, 0.2); }
+        .draggable-card { cursor: grab; background: rgba(30, 41, 59, 0.6); touch-action: none; }
+        .dragging { opacity: 0.4; transform: scale(1.05); border-color: var(--neon-blue); }
 
         .ttt-cell {
             aspect-ratio: 1/1;
             background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.05);
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 2.5rem;
+            font-weight: 900;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: background 0.2s;
         }
-        .x-mark { color: var(--neon-blue); text-shadow: 0 0 10px var(--neon-blue); }
-        .o-mark { color: var(--neon-purple); text-shadow: 0 0 10px var(--neon-purple); }
+        .ttt-cell:hover { background: rgba(255, 255, 255, 0.08); }
+        .x-mark { color: var(--neon-blue); text-shadow: 0 0 15px var(--neon-blue); }
+        .o-mark { color: var(--neon-purple); text-shadow: 0 0 15px var(--neon-purple); }
 
-        .neon-text { text-shadow: 0 0 10px rgba(99, 102, 241, 0.8); }
+        .neon-text { text-shadow: 0 0 10px rgba(99, 102, 241, 0.6); }
     </style>
 </head>
 <body class="p-4 md:p-8">
 
     <div class="max-w-5xl mx-auto">
-        <!-- Header -->
-        <header class="cyber-glass rounded-[2rem] p-6 mb-8 border-l-4 border-l-indigo-500 flex flex-col md:flex-row items-center justify-between gap-6">
-            <div class="text-center md:text-left">
-                <h1 class="text-2xl font-black neon-text text-white tracking-widest uppercase">IT-Lab: System Active</h1>
-                <p class="text-slate-500 text-xs font-bold uppercase tracking-[0.3em]">Модульная среда тестирования</p>
-            </div>
-            <div class="flex items-center gap-4 bg-white/5 px-6 py-3 rounded-2xl border border-white/10">
-                <span class="text-indigo-400 font-black text-xs uppercase tracking-widest">Score</span>
-                <span id="scoreDisplay" class="text-3xl font-black text-white">0</span>
+        <!-- Описание сайта в стиле IT -->
+        <header class="cyber-glass rounded-[2.5rem] p-8 mb-8 border-l-4 border-l-indigo-500 animate__animated animate__fadeIn">
+            <div class="flex flex-col md:flex-row items-center gap-8">
+                <div class="hidden md:flex w-24 h-24 items-center justify-center bg-indigo-600/10 rounded-3xl border border-indigo-500/30 text-indigo-400">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                    </svg>
+                </div>
+                <div class="text-center md:text-left flex-1">
+                    <h1 class="text-3xl font-black text-white neon-text mb-2 uppercase tracking-tight">Cyber-Lab v1.0.4</h1>
+                    <p class="text-slate-400 text-sm leading-relaxed max-w-2xl">
+                        Интерактивная среда для проверки алгоритмического мышления и технических навыков. 
+                        Пройдите все уровни защиты, решите криптографические задачи и сразитесь с локальным искусственным интеллектом. 
+                        Ваш прогресс фиксируется в реальном времени. Удачной компиляции!
+                    </p>
+                </div>
+                <div class="bg-indigo-900/20 border border-indigo-500/30 p-5 rounded-3xl text-center min-w-[140px]">
+                    <p class="text-[10px] font-black text-indigo-400 uppercase tracking-[0.2em] mb-1">Опыт (XP)</p>
+                    <p id="scoreDisplay" class="text-4xl font-black text-white">0</p>
+                </div>
             </div>
         </header>
 
-        <!-- Navigation -->
-        <nav class="flex flex-wrap gap-2 mb-8 justify-center">
-            <button onclick="switchTab('words', this)" class="nav-btn active px-6 py-2 rounded-xl font-bold bg-white/5 text-slate-400">🔍 Филворд</button>
-            <button onclick="switchTab('wheel', this)" class="nav-btn px-6 py-2 rounded-xl font-bold bg-white/5 text-slate-400">🎡 Колесо</button>
-            <button onclick="switchTab('binary', this)" class="nav-btn px-6 py-2 rounded-xl font-bold bg-white/5 text-slate-400">🔢 Двоичный</button>
-            <button onclick="switchTab('order', this)" class="nav-btn px-6 py-2 rounded-xl font-bold bg-white/5 text-slate-400">🧩 Порядок</button>
-            <button onclick="switchTab('ttt', this)" class="nav-btn px-6 py-2 rounded-xl font-bold bg-white/5 text-slate-400">🤖 ИИ-Дуэль</button>
+        <!-- Навигация -->
+        <nav class="flex flex-wrap gap-2 mb-10 justify-center">
+            <button onclick="switchTab('words', this)" class="nav-btn active px-6 py-3 rounded-2xl font-bold bg-white/5 text-slate-500 hover:text-slate-200">🔍 Филворд</button>
+            <button onclick="switchTab('wheel', this)" class="nav-btn px-6 py-3 rounded-2xl font-bold bg-white/5 text-slate-500 hover:text-slate-200">🎡 Колесо</button>
+            <button onclick="switchTab('binary', this)" class="nav-btn px-6 py-3 rounded-2xl font-bold bg-white/5 text-slate-500 hover:text-slate-200">🔢 Двоичный</button>
+            <button onclick="switchTab('order', this)" class="nav-btn px-6 py-3 rounded-2xl font-bold bg-white/5 text-slate-500 hover:text-slate-200">🧩 Порядок</button>
+            <button onclick="switchTab('ttt', this)" class="nav-btn px-6 py-3 rounded-2xl font-bold bg-white/5 text-slate-500 hover:text-slate-200">🤖 ИИ-Дуэль</button>
         </nav>
 
         <main>
             <!-- 1. ФИЛВОРД -->
             <div id="words" class="tab-content active">
-                <div class="cyber-glass p-6 md:p-10 rounded-[2.5rem]">
-                    <div class="flex flex-col lg:flex-row gap-8 items-start justify-center">
-                        <div class="w-full lg:w-48 space-y-2">
-                            <p class="text-[10px] font-black text-indigo-400 mb-4 tracking-widest uppercase">Найти термины:</p>
+                <div class="cyber-glass p-8 rounded-[3rem]">
+                    <div class="flex flex-col lg:flex-row gap-10 items-start justify-center">
+                        <div class="w-full lg:w-56">
+                            <h3 class="text-xs font-black text-indigo-400 uppercase tracking-widest mb-4">Слова-термины:</h3>
                             <div id="wordList" class="grid grid-cols-2 lg:grid-cols-1 gap-2"></div>
                         </div>
-                        <div id="wordGrid" class="grid grid-cols-10 gap-1 p-2 bg-white/5 rounded-xl border border-white/10"></div>
+                        <div id="wordGrid" class="grid grid-cols-10 gap-1.5 p-2 bg-indigo-950/20 rounded-2xl border border-white/5 shadow-inner"></div>
                     </div>
                 </div>
             </div>
 
             <!-- 2. КОЛЕСО -->
             <div id="wheel" class="tab-content">
-                <div class="cyber-glass p-10 rounded-[2.5rem] flex flex-col lg:flex-row items-center gap-12">
-                    <div class="relative w-64 h-64 md:w-80 md:h-80">
-                        <div id="wheelCircle" class="wheel-rotate w-full h-full rounded-full border-8 border-slate-900 shadow-2xl relative overflow-hidden" style="background: conic-gradient(#4f46e5 0 72deg, #9333ea 72deg 144deg, #059669 144deg 216deg, #d97706 216deg 288deg, #2563eb 288deg 360deg);"></div>
-                        <div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-4 w-0 h-0 border-l-[15px] border-l-transparent border-r-[15px] border-r-transparent border-t-[35px] border-t-rose-500 z-10"></div>
-                        <button onclick="spinWheel()" id="spinBtn" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 bg-white rounded-full shadow-2xl font-black text-slate-900 z-20 hover:scale-110 active:scale-95 transition-all">SPIN</button>
+                <div class="cyber-glass p-10 rounded-[3rem] flex flex-col lg:flex-row items-center gap-16 justify-center">
+                    <div class="relative w-72 h-72 md:w-80 md:h-80">
+                        <div id="wheelCircle" class="wheel-rotate w-full h-full rounded-full border-[10px] border-slate-900 shadow-[0_0_40px_rgba(79,70,229,0.2)] relative overflow-hidden" style="background: conic-gradient(#4f46e5 0 72deg, #9333ea 72deg 144deg, #0ea5e9 144deg 216deg, #f59e0b 216deg 288deg, #10b981 288deg 360deg);"></div>
+                        <div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-4 w-0 h-0 border-l-[15px] border-l-transparent border-r-[15px] border-r-transparent border-t-[40px] border-t-rose-500 z-10 shadow-lg"></div>
+                        <button onclick="spinWheel()" id="spinBtn" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 bg-white rounded-full shadow-2xl font-black text-slate-900 z-20 hover:scale-110 active:scale-95 transition-all text-sm">SPIN</button>
                     </div>
-                    <div id="quizBox" class="flex-1 w-full hidden p-6 bg-white/5 rounded-3xl border border-white/10"></div>
+                    <div id="quizBox" class="flex-1 w-full hidden p-8 bg-white/5 rounded-3xl border border-white/10 animate__animated animate__fadeIn"></div>
                 </div>
             </div>
 
             <!-- 3. ДВОИЧНЫЙ КОД -->
             <div id="binary" class="tab-content">
-                <div class="cyber-glass p-10 rounded-[2.5rem] flex flex-col lg:flex-row gap-10">
+                <div class="cyber-glass p-10 rounded-[3rem] flex flex-col lg:flex-row gap-12">
                     <div class="flex-1 text-center">
-                        <h2 id="targetNum" class="text-8xl font-black text-white neon-text mb-8 tracking-tighter">--</h2>
+                        <p class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Декодируй число:</p>
+                        <h2 id="targetNum" class="text-9xl font-black text-white neon-text mb-8">--</h2>
                         <input type="text" id="binInput" maxlength="5" oninput="drawBinaryHints()" class="text-5xl font-mono tracking-widest text-center w-full p-6 bg-white/5 rounded-3xl border-2 border-white/10 mb-6 text-white outline-none focus:border-indigo-500" placeholder="00000">
-                        <button onclick="checkBinary()" class="w-full bg-indigo-600 text-white py-5 rounded-2xl font-black text-xl hover:bg-indigo-700 transition-all">ПРОВЕРИТЬ</button>
+                        <button onclick="checkBinary()" class="w-full bg-indigo-600 text-white py-5 rounded-2xl font-black text-xl hover:bg-indigo-500 shadow-lg transition-all">ПРОВЕРИТЬ КОД</button>
                     </div>
-                    <div id="binaryHintList" class="w-full lg:w-64 space-y-2"></div>
+                    <div id="binaryHintList" class="w-full lg:w-72 space-y-3"></div>
                 </div>
             </div>
 
-            <!-- 4. ПОРЯДОК -->
+            <!-- 4. ПОРЯДОК (АЛГОРИТМ) -->
             <div id="order" class="tab-content">
-                <div class="cyber-glass p-8 md:p-10 rounded-[2.5rem] max-w-2xl mx-auto">
-                    <div class="text-center mb-8">
-                        <h2 id="orderTaskTitle" class="text-xl font-black text-white uppercase tracking-widest leading-tight">--</h2>
-                    </div>
-                    <div id="orderContainer" class="space-y-3 mb-8 min-h-[200px]"></div>
-                    <button onclick="checkOrder()" class="w-full bg-emerald-600 text-white py-5 rounded-2xl font-black text-xl hover:bg-emerald-500 transition-all shadow-lg shadow-emerald-500/20">ПРОВЕРИТЬ АЛГОРИТМ</button>
+                <div class="cyber-glass p-10 rounded-[3rem] max-w-2xl mx-auto border-t-4 border-t-emerald-500">
+                    <h2 id="orderTaskTitle" class="text-xl font-black text-white text-center mb-10 uppercase tracking-widest">--</h2>
+                    <div id="orderContainer" class="space-y-4 mb-10"></div>
+                    <button onclick="checkOrder()" class="w-full bg-emerald-600 text-white py-5 rounded-2xl font-black text-xl hover:bg-emerald-500 shadow-xl transition-all">ВЕРИФИКАЦИЯ</button>
                     <p id="orderResult" class="mt-6 text-center font-black text-lg h-8"></p>
                 </div>
             </div>
 
-            <!-- 5. КРЕСТИКИ НОЛИКИ -->
+            <!-- 5. ИИ-ДУЭЛЬ -->
             <div id="ttt" class="tab-content">
-                <div class="cyber-glass p-10 rounded-[2.5rem] flex flex-col lg:flex-row gap-12 items-center justify-center">
-                    <div class="w-full max-w-xs">
+                <div class="cyber-glass p-10 rounded-[3rem] flex flex-col lg:flex-row gap-12 items-center justify-center">
+                    <div class="w-full max-w-sm">
                         <div class="flex justify-between items-center mb-6">
-                            <h3 class="text-lg font-black text-white">DUEL vs AI</h3>
-                            <select id="aiDifficulty" class="bg-indigo-900/40 text-white text-xs p-2 rounded-lg border border-white/10 outline-none">
-                                <option value="easy">Level: Easy</option>
-                                <option value="medium">Level: Hacker</option>
-                                <option value="hard">Level: Master</option>
+                            <h3 class="text-lg font-black text-white uppercase">Duel Engine</h3>
+                            <select id="aiDifficulty" class="bg-indigo-950 text-indigo-300 text-xs p-2.5 rounded-xl border border-indigo-500/30 outline-none font-bold">
+                                <option value="easy">Сложность: Junior</option>
+                                <option value="medium">Сложность: Senior</option>
+                                <option value="hard">Сложность: Lead (Minimax)</option>
                             </select>
                         </div>
-                        <div id="tttBoard" class="grid grid-cols-3 gap-2"></div>
-                        <button onclick="resetTTT()" class="mt-6 w-full py-3 bg-white/5 rounded-xl text-xs font-bold text-slate-500 hover:text-white border border-white/10 transition-all">СБРОС ПОЛЯ</button>
+                        <div id="tttBoard" class="grid grid-cols-3 gap-3"></div>
+                        <button onclick="resetTTT()" class="mt-6 w-full py-4 bg-white/5 rounded-2xl text-xs font-black text-slate-500 hover:text-white border border-white/5 transition-all tracking-widest uppercase">Перезагрузить поле</button>
                     </div>
-                    <div class="text-center lg:text-left space-y-4">
-                        <p id="tttStatus" class="text-2xl font-black text-indigo-400">Твой ход (X)</p>
-                        <p class="text-slate-500 text-sm max-w-xs">Система использует алгоритм поиска Minimax на уровне "Master". Обыграть его практически невозможно.</p>
+                    <div class="text-center lg:text-left space-y-6 flex-1 max-w-xs">
+                        <div class="p-6 bg-indigo-600/10 rounded-3xl border border-indigo-500/20">
+                            <p id="tttStatus" class="text-2xl font-black text-white leading-tight">Ваш ход (X)</p>
+                        </div>
+                        <p class="text-slate-500 text-xs leading-relaxed uppercase tracking-wider">
+                            Уровень "Lead" использует рекурсивный алгоритм для просчета всех возможных исходов. Попробуйте найти уязвимость в его логике.
+                        </p>
                     </div>
                 </div>
             </div>
@@ -183,6 +197,8 @@
         function updateScore(pts) {
             score += pts;
             scoreDisplay.innerText = score;
+            scoreDisplay.classList.add('animate__animated', 'animate__pulse');
+            setTimeout(() => scoreDisplay.classList.remove('animate__animated', 'animate__pulse'), 500);
         }
 
         function switchTab(id, btn) {
@@ -191,39 +207,34 @@
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             
-            // Re-init games on switch
             if (id === 'words') initWordSearch();
             if (id === 'binary') initBinary();
             if (id === 'order') initOrder();
             if (id === 'ttt') initTTT();
-            if (id === 'wheel') {
-                document.getElementById('quizBox').classList.add('hidden');
-                document.getElementById('spinBtn').disabled = false;
-            }
         }
 
         // --- 🔍 ФИЛВОРД ---
-        const IT_WORDS = ['PYTHON', 'SERVER', 'ROUTER', 'PIXEL', 'DATA', 'CODE', 'ARRAY', 'BYTE'];
+        const WORDS = ['PYTHON', 'SERVER', 'KERNEL', 'DOCKER', 'GITHUB', 'SCRIPT', 'SOURCE', 'BINARY'];
         let selectedCells = [];
-        let wordsFound = [];
+        let foundWords = [];
 
         function initWordSearch() {
             const grid = document.getElementById('wordGrid');
             const list = document.getElementById('wordList');
             grid.innerHTML = ''; list.innerHTML = '';
-            wordsFound = []; selectedCells = [];
+            foundWords = []; selectedCells = [];
 
-            IT_WORDS.forEach(word => {
+            WORDS.forEach(w => {
                 const item = document.createElement('div');
-                item.id = 'word-item-' + word;
-                item.className = 'px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg text-[10px] font-black text-slate-600 text-center uppercase tracking-tighter';
-                item.innerText = word;
+                item.id = 'w-' + w;
+                item.className = 'px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-[10px] font-black text-slate-600 text-center uppercase tracking-widest';
+                item.innerText = w;
                 list.appendChild(item);
             });
 
             const size = 10;
-            let matrix = Array(size).fill(null).map(() => Array(size).fill(''));
-            IT_WORDS.forEach(word => {
+            let m = Array(size).fill(null).map(() => Array(size).fill(''));
+            WORDS.forEach(word => {
                 let placed = false;
                 while (!placed) {
                     const isV = Math.random() > 0.5;
@@ -231,10 +242,10 @@
                     const c = Math.floor(Math.random() * (isV ? size : size - word.length));
                     let ok = true;
                     for (let i = 0; i < word.length; i++) {
-                        if (matrix[isV ? r+i : r][isV ? c : c+i] !== '') ok = false;
+                        if (m[isV ? r+i : r][isV ? c : c+i] !== '') ok = false;
                     }
                     if (ok) {
-                        for (let i = 0; i < word.length; i++) matrix[isV?r+i:r][isV?c:c+i] = word[i];
+                        for (let i = 0; i < word.length; i++) m[isV?r+i:r][isV?c:c+i] = word[i];
                         placed = true;
                     }
                 }
@@ -243,23 +254,27 @@
             for (let r = 0; r < size; r++) {
                 for (let c = 0; c < size; c++) {
                     const cell = document.createElement('div');
-                    cell.className = 'grid-cell w-8 h-8 md:w-10 md:h-10 flex items-center justify-center bg-white/5 shadow-sm font-black text-slate-400 cursor-pointer hover:bg-white/10 rounded border border-white/5 text-xs';
-                    cell.innerText = matrix[r][c] || String.fromCharCode(65 + Math.floor(Math.random() * 26));
+                    cell.className = 'w-7 h-7 md:w-10 md:h-10 flex items-center justify-center bg-white/5 font-black text-slate-500 cursor-pointer hover:bg-indigo-500/20 rounded border border-white/5 text-xs transition-colors';
+                    cell.innerText = m[r][c] || String.fromCharCode(65 + Math.floor(Math.random() * 26));
                     cell.onclick = () => {
                         if (cell.classList.contains('found')) return;
-                        cell.classList.toggle('selected');
-                        if (cell.classList.contains('selected')) selectedCells.push(cell);
+                        cell.classList.toggle('bg-indigo-600');
+                        cell.classList.toggle('text-white');
+                        
+                        if (cell.classList.contains('bg-indigo-600')) selectedCells.push(cell);
                         else selectedCells = selectedCells.filter(x => x !== cell);
                         
                         const txt = selectedCells.map(x => x.innerText).join('');
-                        if (IT_WORDS.includes(txt) && !wordsFound.includes(txt)) {
-                            wordsFound.push(txt);
-                            selectedCells.forEach(x => x.className = 'grid-cell w-8 h-8 md:w-10 md:h-10 flex items-center justify-center bg-emerald-500 text-white font-black rounded found animate__animated animate__flash text-xs');
-                            document.getElementById('word-item-' + txt).className = 'px-3 py-1.5 bg-emerald-600 text-white rounded-lg text-[10px] font-black text-center border border-emerald-400';
+                        if (WORDS.includes(txt) && !foundWords.includes(txt)) {
+                            foundWords.push(txt);
+                            selectedCells.forEach(x => {
+                                x.className = 'w-7 h-7 md:w-10 md:h-10 flex items-center justify-center bg-emerald-500 text-white font-black rounded found text-xs animate__animated animate__bounceIn';
+                            });
+                            document.getElementById('w-' + txt).className = 'px-4 py-2 bg-emerald-500/20 border border-emerald-500 text-emerald-400 rounded-xl text-[10px] font-black text-center uppercase tracking-widest';
                             selectedCells = [];
                             updateScore(50);
                         } else if (selectedCells.length > 7) {
-                            selectedCells.forEach(x => x.classList.remove('selected'));
+                            selectedCells.forEach(x => { x.classList.remove('bg-indigo-600', 'text-white'); });
                             selectedCells = [];
                         }
                     };
@@ -269,104 +284,58 @@
         }
 
         // --- 🎡 КОЛЕСО ---
-        const questions = [
-            { q: "Основная единица измерения информации?", a: ["Бит", "Байт", "Килобит"], c: 1 },
-            { q: "Что такое HTTP?", a: ["Протокол", "Язык", "Железо"], c: 0 },
-            { q: "Как называется 'мозг' компьютера?", a: ["HDD", "RAM", "CPU"], c: 2 },
-            { q: "Популярный язык для Data Science?", a: ["C++", "Python", "Swift"], c: 1 },
-            { q: "Сколько бит в байте?", a: ["8", "16", "32"], c: 0 }
+        const Q = [
+            { q: "Что такое API?", a: ["Интерфейс", "База данных", "Язык"], c: 0 },
+            { q: "Какой порт обычно у HTTP?", a: ["443", "80", "21"], c: 1 },
+            { q: "Основной тег HTML документа?", a: ["<body>", "<html>", "<head>"], c: 1 },
+            { q: "Тип данных для True/False?", a: ["Integer", "String", "Boolean"], c: 2 }
         ];
-        let wheelRotation = 0;
-
+        let rotation = 0;
         function spinWheel() {
             const wheel = document.getElementById('wheelCircle');
             const btn = document.getElementById('spinBtn');
-            const box = document.getElementById('quizBox');
-            
             btn.disabled = true;
-            box.classList.add('hidden');
-            
-            const extra = Math.floor(Math.random() * 360) + 1440;
-            wheelRotation += extra;
-            wheel.style.transform = `rotate(${wheelRotation}deg)`;
-
+            document.getElementById('quizBox').classList.add('hidden');
+            const r = Math.floor(Math.random() * 360) + 1800;
+            rotation += r;
+            wheel.style.transform = `rotate(${rotation}deg)`;
             setTimeout(() => {
                 btn.disabled = false;
-                const idx = Math.floor(Math.random() * questions.length);
-                renderQuiz(questions[idx]);
+                renderQuiz(Q[Math.floor(Math.random() * Q.length)]);
             }, 4000);
         }
-
         function renderQuiz(data) {
             const box = document.getElementById('quizBox');
             box.innerHTML = `
                 <h3 class="text-xl font-black text-white mb-6 uppercase tracking-tight">${data.q}</h3>
-                <div class="flex flex-col gap-3">
-                    ${data.a.map((ans, i) => `<button onclick="checkWheelAnswer(this, ${i}, ${data.c})" class="p-4 bg-white/5 border border-white/10 rounded-xl font-bold text-left text-slate-400 hover:text-white transition-all hover:border-indigo-500">${ans}</button>`).join('')}
-                </div>
-            `;
+                <div class="grid gap-3">
+                    ${data.a.map((ans, i) => `<button onclick="checkWheelAns(this, ${i}, ${data.c})" class="p-4 bg-white/5 border border-white/10 rounded-2xl font-bold text-left text-slate-400 hover:text-white transition-all hover:border-indigo-500">${ans}</button>`).join('')}
+                </div>`;
             box.classList.remove('hidden');
-            box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
-
-        function checkWheelAnswer(btn, i, c) {
-            if (i === c) {
-                btn.className = "p-4 bg-emerald-600 text-white rounded-xl font-bold text-left border border-emerald-400";
-                updateScore(30);
-            } else {
-                btn.className = "p-4 bg-rose-600 text-white rounded-xl font-bold text-left border border-rose-400";
-            }
+        function checkWheelAns(btn, i, c) {
+            if (i === c) { btn.className = "p-4 bg-emerald-600 text-white rounded-2xl font-bold text-left border border-emerald-400"; updateScore(30); }
+            else { btn.className = "p-4 bg-rose-600 text-white rounded-2xl font-bold text-left border border-rose-400"; }
             document.querySelectorAll('#quizBox button').forEach(b => b.disabled = true);
         }
 
         // --- 🔢 ДВОИЧНЫЙ КОД ---
-        let binTarget = 0;
+        let bTarget = 0;
         function initBinary() {
-            binTarget = Math.floor(Math.random() * 31) + 1;
-            document.getElementById('targetNum').innerText = binTarget;
+            bTarget = Math.floor(Math.random() * 31) + 1;
+            document.getElementById('targetNum').innerText = bTarget;
             document.getElementById('binInput').value = '';
             drawBinaryHints();
         }
-
         function drawBinaryHints() {
-            const input = document.getElementById('binInput').value.padStart(5, '0');
-            const hints = document.getElementById('binaryHintList');
-            hints.innerHTML = '';
-            [16, 8, 4, 2, 1].forEach((val, i) => {
-                const active = input[i] === '1';
-                hints.innerHTML += `
-                    <div class="p-4 rounded-xl flex justify-between border transition-all ${active ? 'bg-indigo-600 border-indigo-400 text-white' : 'bg-white/5 border-white/5 text-slate-600'}">
-                        <span class="font-bold text-xs opacity-50">2^${4-i}</span>
-                        <span class="font-black text-xl">${val}</span>
-                    </div>
-                `;
+            const val = document.getElementById('binInput').value.padStart(5, '0');
+            const h = document.getElementById('binaryHintList');
+            h.innerHTML = '';
+            [16, 8, 4, 2, 1].forEach((v, i) => {
+                const act = val[i] === '1';
+                h.innerHTML += `<div class="p-4 rounded-2xl border transition-all ${act ? 'bg-indigo-600 border-indigo-400 text-white shadow-lg' : 'bg-white/5 border-white/5 text-slate-600'} flex justify-between items-center"><span class="font-bold text-xs opacity-50">2^${4-i}</span><span class="font-black text-xl">${v}</span></div>`;
             });
         }
-
         function checkBinary() {
-            const val = document.getElementById('binInput').value;
-            if (parseInt(val, 2) === binTarget) {
-                updateScore(100);
-                initBinary();
-            } else {
-                const input = document.getElementById('binInput');
-                input.classList.add('animate__animated', 'animate__shakeX');
-                setTimeout(() => input.classList.remove('animate__animated', 'animate__shakeX'), 1000);
-            }
-        }
-
-        // --- 🧩 ПОРЯДОК (ИСПРАВЛЕННЫЙ ALGORITHM) ---
-        const tasks = [
-            { t: "Загрузка Веб-Страницы", s: ["DNS запрос", "Установка TCP", "HTTP GET", "Рендеринг DOM"] },
-            { t: "Компиляция Программы", s: ["Лексический анализ", "Синтаксический разбор", "Оптимизация кода", "Генерация машинного кода"] }
-        ];
-        let currentCorrect = [];
-
-        function initOrder() {
-            const container = document.getElementById('orderContainer');
-            const task = tasks[Math.floor(Math.random() * tasks.length)];
-            currentCorrect = task.s;
-            document.getElementById('orderTaskTitle').innerText = task.t;
-            document.getElementById('orderResult').innerText = "";
-            
-     
+            if (parseInt(document.getElementById('binInput').value, 2) === bTarget) { updateScore(80); initBinary(); }
+            else { document.getElementById('binInput').classList.add('animate__animated', 'animate__shakeX'); setTimeout(() => document.getElementById('binInput').
